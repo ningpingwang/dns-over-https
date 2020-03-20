@@ -98,6 +98,7 @@ func NewServer(conf *config) (*Server, error) {
 			LocalAddr: tcpLocalAddr,
 		}
 	}
+	s.servemux.HandleFunc("/health", s.healthFunc)
 	s.servemux.HandleFunc(conf.Path, s.handlerFunc)
 	return s, nil
 }
@@ -131,6 +132,10 @@ func (s *Server) Start() error {
 	}
 	close(results)
 	return nil
+}
+
+func (s *Server) healthFunc(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "ok\n")
 }
 
 func (s *Server) handlerFunc(w http.ResponseWriter, r *http.Request) {
